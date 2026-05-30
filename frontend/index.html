@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>K8s AI Agent</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    header { background: #1e293b; padding: 1rem 2rem; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 1rem; }
+    header h1 { font-size: 1.4rem; color: #38bdf8; }
+    header span { font-size: 0.8rem; background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 99px; }
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card h2 { font-size: 1rem; color: #94a3b8; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    input { flex: 1; min-width: 180px; background: #0f172a; border: 1px solid #334155; color: #e2e8f0; padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.95rem; }
+    input::placeholder { color: #475569; }
+    button { background: #0ea5e9; color: #fff; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: background 0.2s; }
+    button:hover { background: #0284c7; }
+    button:disabled { background: #334155; cursor: not-allowed; }
+    .result { display: none; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.8rem; font-weight: 600; }
+    .badge-green { background: #14532d; color: #4ade80; }
+    .badge-yellow { background: #713f12; color: #fbbf24; }
+    .badge-red { background: #7f1d1d; color: #f87171; }
+    .summary-box { background: #0f172a; border-left: 3px solid #0ea5e9; padding: 1rem; border-radius: 0 8px 8px 0; margin: 1rem 0; font-size: 0.95rem; line-height: 1.6; }
+    .signals { list-style: none; }
+    .signals li { padding: 0.4rem 0; border-bottom: 1px solid #1e293b; font-size: 0.9rem; }
+    .signals li::before { content: "⚠ "; color: #fbbf24; }
+    .fix { background: #0f172a; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; }
+    .fix p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 0.5rem; }
+    .fix code { display: block; background: #020617; color: #4ade80; padding: 0.6rem 1rem; border-radius: 6px; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; }
+    .loader { display: none; text-align: center; padding: 2rem; color: #94a3b8; }
+    .spinner { width: 36px; height: 36px; border: 3px solid #334155; border-top-color: #0ea5e9; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error { color: #f87171; background: #7f1d1d22; border: 1px solid #f8717144; padding: 1rem; border-radius: 8px; }
+    .history-item { border-bottom: 1px solid #334155; padding: 0.75rem 0; cursor: pointer; }
+    .history-item:hover { color: #38bdf8; }
+    .history-item:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>⎈ K8s AI Agent</h1>
+    <span>Powered by LLM</span>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Investigate Cluster</h2>
+      <div class="form-row">
+        <input id="namespace" placeholder="Namespace (default)" value="default" />
+        <input id="pod_name" placeholder="Pod name (optional)" />
+        <input id="deployment_name" placeholder="Deployment name (optional)" />
+        <button id="investigate-btn" onclick="runInvestigation()">Investigate</button>
+      </div>
+    </div>
+
+    <div class="loader" id="loader">
+      <div class="spinner"></div>
+      <p>Gathering evidence and analyzing with AI...</p>
+    </div>
+
+    <div class="card result" id="result-card">
+      <h2>Analysis Result</h2>
+      <div id="result-content"></div>
+    </div>
+
+    <div class="card" id="history-card" style="display:none">
+      <h2>Investigation History</h2>
+      <div id="history-list"></div>
+    </div>
+  </main>
+
+  <script>
+    const API = 'http://localhost:8000/api/v1';
+
+    async function runInvestigation() {
+      const btn = document.getElementById('investigate-btn');
+      const loader = document.getElementById('loader');
+      const resultCard = document.getElementById('result-card');
+
+      btn.disabled = true;
+      loader.style.display = 'block';
+      resultCard.style.display = 'none';
+
+      const payload = {
+        namespace: document.getElementById('namespace').value || 'default',
+        pod_name: document.getElementById('pod_name').value || null,
+        deployment_name: document.getElementById('deployment_name').value || null,
+      };
+
+      try {
+        const res = await fetch(`${API}/investigate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Investigation failed');
+        renderResult(data);
+        loadHistory();
+      } catch (err) {
+        document.getElementById('result-content').innerHTML = `<div class="error">${err.message}</div>`;
+        resultCard.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        loader.style.display = 'none';
+      }
+    }
+
+    function confidenceBadge(score) {
+      if (score >= 80) return `<span class="badge badge-green">Confidence: ${score}%</span>`;
+      if (score >= 50) return `<span class="badge badge-yellow">Confidence: ${score}%</span>`;
+      return `<span class="badge badge-red">Confidence: ${score}%</span>`;
+    }
+
+    function renderResult(data) {
+      const a = data.analysis;
+      const html = `
+        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+          <strong style="font-size:1.1rem">${a.root_cause}</strong>
+          ${confidenceBadge(a.confidence)}
+        </div>
+        <div class="summary-box">${a.summary}</div>
+        <h3 style="margin:1rem 0 0.5rem; color:#94a3b8; font-size:0.85rem; text-transform:uppercase">Signals Detected</h3>
+        <ul class="signals">${(a.signals || []).map(s => `<li>${s}</li>`).join('')}</ul>
+        <h3 style="margin:1rem 0 0.5rem; color:#94a3b8; font-size:0.85rem; text-transform:uppercase">Fix Recommendations</h3>
+        ${(a.fix_recommendations || []).map(f => `
+          <div class="fix">
+            <p>${f.description}</p>
+            <code>${f.command}</code>
+          </div>
+        `).join('')}
+        <p style="margin-top:1rem; font-size:0.8rem; color:#475569">Investigation ID: ${data.id}</p>
+      `;
+      document.getElementById('result-content').innerHTML = html;
+      document.getElementById('result-card').style.display = 'block';
+    }
+
+    async function loadHistory() {
+      try {
+        const res = await fetch(`${API}/history`);
+        const data = await res.json();
+        if (!data.investigations.length) return;
+        const card = document.getElementById('history-card');
+        const list = document.getElementById('history-list');
+        list.innerHTML = data.investigations.slice(0, 5).map(inv => `
+          <div class="history-item">
+            <strong>${inv.analysis?.root_cause || 'Unknown'}</strong>
+            <span style="float:right; color:#475569; font-size:0.8rem">${new Date(inv.timestamp * 1000).toLocaleTimeString()}</span>
+            <div style="font-size:0.8rem; color:#475569">${inv.namespace} ${inv.pod_name ? '· ' + inv.pod_name : ''}</div>
+          </div>
+        `).join('');
+        card.style.display = 'block';
+      } catch {}
+    }
+  </script>
+</body>
+</html>
