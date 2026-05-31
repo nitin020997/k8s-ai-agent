@@ -10,7 +10,13 @@
     header { background: #1e293b; padding: 1rem 2rem; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 1rem; }
     header h1 { font-size: 1.4rem; color: #38bdf8; }
     header span { font-size: 0.8rem; background: #0ea5e9; color: #fff; padding: 2px 8px; border-radius: 99px; }
-    main { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    nav { display: flex; gap: 0; margin-left: auto; }
+    .nav-tab { background: none; border: none; color: #94a3b8; padding: 0.4rem 1.2rem; cursor: pointer; font-size: 0.9rem; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .nav-tab.active { color: #38bdf8; border-bottom-color: #38bdf8; }
+    .nav-tab:hover { color: #e2e8f0; }
+    main { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+    .page { display: none; }
+    .page.active { display: block; }
     .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
     .card h2 { font-size: 1rem; color: #94a3b8; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
     .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
@@ -19,11 +25,18 @@
     button { background: #0ea5e9; color: #fff; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: background 0.2s; }
     button:hover { background: #0284c7; }
     button:disabled { background: #334155; cursor: not-allowed; }
+    .btn-sm { padding: 0.3rem 0.8rem; font-size: 0.8rem; border-radius: 6px; }
+    .btn-danger { background: #dc2626; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-ghost { background: #1e293b; border: 1px solid #334155; color: #94a3b8; }
+    .btn-ghost:hover { background: #334155; color: #e2e8f0; }
     .result { display: none; }
-    .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.8rem; font-weight: 600; }
-    .badge-green { background: #14532d; color: #4ade80; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 600; }
+    .badge-green  { background: #14532d; color: #4ade80; }
     .badge-yellow { background: #713f12; color: #fbbf24; }
-    .badge-red { background: #7f1d1d; color: #f87171; }
+    .badge-red    { background: #7f1d1d; color: #f87171; }
+    .badge-blue   { background: #1e3a5f; color: #60a5fa; }
+    .badge-gray   { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
     .summary-box { background: #0f172a; border-left: 3px solid #0ea5e9; padding: 1rem; border-radius: 0 8px 8px 0; margin: 1rem 0; font-size: 0.95rem; line-height: 1.6; }
     .signals { list-style: none; }
     .signals li { padding: 0.4rem 0; border-bottom: 1px solid #1e293b; font-size: 0.9rem; }
@@ -33,53 +46,135 @@
     .fix code { display: block; background: #020617; color: #4ade80; padding: 0.6rem 1rem; border-radius: 6px; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; }
     .loader { display: none; text-align: center; padding: 2rem; color: #94a3b8; }
     .spinner { width: 36px; height: 36px; border: 3px solid #334155; border-top-color: #0ea5e9; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+    .spinner-sm { width: 16px; height: 16px; border-width: 2px; display: inline-block; vertical-align: middle; margin: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .error { color: #f87171; background: #7f1d1d22; border: 1px solid #f8717144; padding: 1rem; border-radius: 8px; }
     .history-item { border-bottom: 1px solid #334155; padding: 0.75rem 0; cursor: pointer; }
     .history-item:hover { color: #38bdf8; }
     .history-item:last-child { border-bottom: none; }
+
+    /* Argo CD styles */
+    .app-grid { display: grid; gap: 1rem; }
+    .app-card { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 1.2rem; transition: border-color 0.2s; }
+    .app-card:hover { border-color: #475569; }
+    .app-card.out-of-sync { border-left: 3px solid #fbbf24; }
+    .app-card.degraded { border-left: 3px solid #f87171; }
+    .app-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .app-name { font-size: 1rem; font-weight: 600; color: #e2e8f0; flex: 1; }
+    .app-meta { font-size: 0.8rem; color: #475569; margin-bottom: 0.75rem; line-height: 1.6; }
+    .app-meta span { color: #64748b; }
+    .app-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+    .diff-block { background: #020617; border-radius: 8px; padding: 1rem; margin-top: 0.75rem; display: none; }
+    .diff-block pre { font-size: 0.78rem; color: #94a3b8; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; }
+    .diff-line-add { color: #4ade80; }
+    .diff-line-del { color: #f87171; }
+    .resource-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; border-bottom: 1px solid #1e293b; font-size: 0.85rem; }
+    .resource-row:last-child { border-bottom: none; }
+    .resource-kind { color: #64748b; width: 90px; flex-shrink: 0; }
+    .resource-name { flex: 1; }
+    .argocd-toolbar { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+    .argocd-toolbar input { max-width: 220px; }
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; padding: 0.8rem 1.2rem; border-radius: 10px; font-size: 0.9rem; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { border-color: #4ade80; color: #4ade80; }
+    .toast.error { border-color: #f87171; color: #f87171; }
+    .gitops-banner { display: flex; align-items: center; gap: 0.75rem; background: #fbbf2411; border: 1px solid #fbbf2444; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.9rem; }
+    .gitops-banner .icon { font-size: 1.2rem; }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: #475569; }
+    .empty-state p { margin-top: 0.5rem; font-size: 0.9rem; }
+    .section-divider { border: none; border-top: 1px solid #1e293b; margin: 1rem 0; }
   </style>
 </head>
 <body>
   <header>
     <h1>⎈ K8s AI Agent</h1>
-    <span>Powered by LLM</span>
+    <span>GitOps-Aware</span>
+    <nav>
+      <button class="nav-tab active" onclick="showPage('investigate')">Investigate</button>
+      <button class="nav-tab" onclick="showPage('argocd')">Argo CD</button>
+      <button class="nav-tab" onclick="showPage('history')">History</button>
+    </nav>
   </header>
+
   <main>
-    <div class="card">
-      <h2>Investigate Cluster</h2>
-      <div class="form-row">
-        <input id="namespace" placeholder="Namespace (default)" value="default" />
-        <input id="pod_name" placeholder="Pod name (optional)" />
-        <input id="deployment_name" placeholder="Deployment name (optional)" />
-        <button id="investigate-btn" onclick="runInvestigation()">Investigate</button>
+    <!-- ── Investigate Page ─────────────────────────────────── -->
+    <div class="page active" id="page-investigate">
+      <div class="card">
+        <h2>Investigate Cluster</h2>
+        <div class="form-row">
+          <input id="namespace" placeholder="Namespace (default)" value="default" />
+          <input id="pod_name" placeholder="Pod name (optional)" />
+          <input id="deployment_name" placeholder="Deployment name (optional)" />
+          <input id="argocd_app_input" placeholder="Argo CD app (optional)" />
+          <button id="investigate-btn" onclick="runInvestigation()">Investigate</button>
+        </div>
+      </div>
+
+      <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p>Gathering evidence and analyzing with AI...</p>
+      </div>
+
+      <div class="card result" id="result-card">
+        <h2>Analysis Result</h2>
+        <div id="result-content"></div>
       </div>
     </div>
 
-    <div class="loader" id="loader">
-      <div class="spinner"></div>
-      <p>Gathering evidence and analyzing with AI...</p>
+    <!-- ── Argo CD Page ──────────────────────────────────────── -->
+    <div class="page" id="page-argocd">
+      <div class="card">
+        <h2>GitOps Applications</h2>
+        <div class="argocd-toolbar">
+          <input id="argocd-search" placeholder="Search apps..." oninput="filterApps()" />
+          <button onclick="loadArgoCDApps()" class="btn-ghost btn-sm">↻ Refresh</button>
+          <span id="argocd-summary" style="font-size:0.85rem; color:#475569; margin-left:auto"></span>
+        </div>
+        <div id="argocd-loader" class="loader" style="padding:1rem">
+          <div class="spinner spinner-sm"></div>
+        </div>
+        <div id="argocd-apps-list"></div>
+      </div>
     </div>
 
-    <div class="card result" id="result-card">
-      <h2>Analysis Result</h2>
-      <div id="result-content"></div>
-    </div>
-
-    <div class="card" id="history-card" style="display:none">
-      <h2>Investigation History</h2>
-      <div id="history-list"></div>
+    <!-- ── History Page ─────────────────────────────────────── -->
+    <div class="page" id="page-history">
+      <div class="card">
+        <h2>Investigation History</h2>
+        <div id="history-list-full"><div class="empty-state">⊘<p>No investigations yet</p></div></div>
+      </div>
     </div>
   </main>
 
-  <script>
-    const API = 'http://localhost:8000/api/v1';
+  <div class="toast" id="toast"></div>
 
+  <script>
+    const API = 'http://localhost:8001/api/v1';
+    let allApps = [];
+
+    // ── Navigation ──────────────────────────────────────────────
+    function showPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('page-' + name).classList.add('active');
+      document.querySelectorAll('.nav-tab')[['investigate','argocd','history'].indexOf(name)].classList.add('active');
+      if (name === 'argocd') loadArgoCDApps();
+      if (name === 'history') loadHistory();
+    }
+
+    // ── Toast ───────────────────────────────────────────────────
+    function showToast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      setTimeout(() => t.className = 'toast', 3000);
+    }
+
+    // ── Investigate ─────────────────────────────────────────────
     async function runInvestigation() {
       const btn = document.getElementById('investigate-btn');
       const loader = document.getElementById('loader');
       const resultCard = document.getElementById('result-card');
-
       btn.disabled = true;
       loader.style.display = 'block';
       resultCard.style.display = 'none';
@@ -88,18 +183,16 @@
         namespace: document.getElementById('namespace').value || 'default',
         pod_name: document.getElementById('pod_name').value || null,
         deployment_name: document.getElementById('deployment_name').value || null,
+        argocd_app: document.getElementById('argocd_app_input').value || null,
       };
 
       try {
         const res = await fetch(`${API}/investigate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || 'Investigation failed');
         renderResult(data);
-        loadHistory();
       } catch (err) {
         document.getElementById('result-content').innerHTML = `<div class="error">${err.message}</div>`;
         resultCard.style.display = 'block';
@@ -117,11 +210,25 @@
 
     function renderResult(data) {
       const a = data.analysis;
+      const gc = a.gitops_context || {};
+      const gitopsBanner = gc.drift_detected ? `
+        <div class="gitops-banner">
+          <span class="icon">⚡</span>
+          <div>
+            <strong>GitOps Drift Detected</strong> — live cluster state differs from Git.
+            Recommended action: <strong>${gc.recommended_action || 'sync'}</strong>
+          </div>
+        </div>` : (gc.is_gitops_managed ? `
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;font-size:0.85rem;color:#4ade80">
+          ✓ GitOps-managed — no drift detected
+        </div>` : '');
+
       const html = `
-        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem; flex-wrap:wrap">
           <strong style="font-size:1.1rem">${a.root_cause}</strong>
           ${confidenceBadge(a.confidence)}
         </div>
+        ${gitopsBanner}
         <div class="summary-box">${a.summary}</div>
         <h3 style="margin:1rem 0 0.5rem; color:#94a3b8; font-size:0.85rem; text-transform:uppercase">Signals Detected</h3>
         <ul class="signals">${(a.signals || []).map(s => `<li>${s}</li>`).join('')}</ul>
@@ -130,29 +237,167 @@
           <div class="fix">
             <p>${f.description}</p>
             <code>${f.command}</code>
-          </div>
-        `).join('')}
+          </div>`).join('')}
         <p style="margin-top:1rem; font-size:0.8rem; color:#475569">Investigation ID: ${data.id}</p>
       `;
       document.getElementById('result-content').innerHTML = html;
       document.getElementById('result-card').style.display = 'block';
     }
 
+    // ── Argo CD ─────────────────────────────────────────────────
+    async function loadArgoCDApps() {
+      const loader = document.getElementById('argocd-loader');
+      const list = document.getElementById('argocd-apps-list');
+      loader.style.display = 'block';
+      list.innerHTML = '';
+      try {
+        const res = await fetch(`${API}/argocd/apps`);
+        if (!res.ok) throw new Error('Failed to load apps');
+        const data = await res.json();
+        allApps = data.apps || [];
+        renderApps(allApps);
+        updateArgoCDSummary(allApps);
+      } catch (err) {
+        list.innerHTML = `<div class="error">${err.message} — is the backend running with Argo CD configured?</div>`;
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    function updateArgoCDSummary(apps) {
+      const outOfSync = apps.filter(a => a.sync_status !== 'Synced').length;
+      const unhealthy = apps.filter(a => a.health_status !== 'Healthy').length;
+      let parts = [`${apps.length} app${apps.length !== 1 ? 's' : ''}`];
+      if (outOfSync) parts.push(`<span style="color:#fbbf24">${outOfSync} out of sync</span>`);
+      if (unhealthy) parts.push(`<span style="color:#f87171">${unhealthy} unhealthy</span>`);
+      document.getElementById('argocd-summary').innerHTML = parts.join(' · ');
+    }
+
+    function filterApps() {
+      const q = document.getElementById('argocd-search').value.toLowerCase();
+      const filtered = allApps.filter(a => a.name.toLowerCase().includes(q) || (a.repo || '').toLowerCase().includes(q));
+      renderApps(filtered);
+    }
+
+    function syncBadge(status) {
+      if (status === 'Synced') return `<span class="badge badge-green">Synced</span>`;
+      if (status === 'OutOfSync') return `<span class="badge badge-yellow">OutOfSync</span>`;
+      return `<span class="badge badge-gray">${status || 'Unknown'}</span>`;
+    }
+
+    function healthBadge(status) {
+      if (status === 'Healthy') return `<span class="badge badge-green">Healthy</span>`;
+      if (status === 'Degraded') return `<span class="badge badge-red">Degraded</span>`;
+      if (status === 'Progressing') return `<span class="badge badge-blue">Progressing</span>`;
+      if (status === 'Missing') return `<span class="badge badge-red">Missing</span>`;
+      return `<span class="badge badge-gray">${status || 'Unknown'}</span>`;
+    }
+
+    function renderApps(apps) {
+      const list = document.getElementById('argocd-apps-list');
+      if (!apps.length) {
+        list.innerHTML = '<div class="empty-state">⊘<p>No applications found</p></div>';
+        return;
+      }
+      list.innerHTML = `<div class="app-grid">${apps.map(app => {
+        const cardClass = app.sync_status === 'OutOfSync' ? 'out-of-sync' : app.health_status === 'Degraded' ? 'degraded' : '';
+        return `
+          <div class="app-card ${cardClass}" id="appcard-${app.name}">
+            <div class="app-header">
+              <span class="app-name">${app.name}</span>
+              ${syncBadge(app.sync_status)}
+              ${healthBadge(app.health_status)}
+            </div>
+            <div class="app-meta">
+              <span>Repo:</span> ${app.repo || '—'}<br/>
+              <span>Path:</span> ${app.path || '—'} &nbsp;·&nbsp;
+              <span>Revision:</span> ${(app.sync_revision || '').slice(0,7) || 'HEAD'} &nbsp;·&nbsp;
+              <span>Dest:</span> ${app.dest_namespace || 'default'}
+            </div>
+            <div class="app-actions">
+              <button class="btn-sm" onclick="syncApp('${app.name}')">↑ Sync</button>
+              <button class="btn-sm btn-ghost" onclick="toggleDiff('${app.name}')">Diff</button>
+              <button class="btn-sm btn-ghost" onclick="investigateApp('${app.name}')">🔍 Investigate</button>
+            </div>
+            <div class="diff-block" id="diff-${app.name}">
+              <div id="diff-content-${app.name}"><div class="spinner spinner-sm"></div></div>
+            </div>
+          </div>`;
+      }).join('')}</div>`;
+    }
+
+    async function syncApp(appName) {
+      try {
+        const res = await fetch(`${API}/argocd/apps/${appName}/sync`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' });
+        if (!res.ok) throw new Error((await res.json()).detail);
+        showToast(`↑ Sync triggered for ${appName}`, 'success');
+        setTimeout(() => loadArgoCDApps(), 2000);
+      } catch (err) {
+        showToast(`Sync failed: ${err.message}`, 'error');
+      }
+    }
+
+    async function toggleDiff(appName) {
+      const block = document.getElementById(`diff-${appName}`);
+      if (block.style.display === 'block') { block.style.display = 'none'; return; }
+      block.style.display = 'block';
+      try {
+        const res = await fetch(`${API}/argocd/apps/${appName}/diff`);
+        if (!res.ok) throw new Error((await res.json()).detail);
+        const data = await res.json();
+        const content = document.getElementById(`diff-content-${appName}`);
+        if (!data.out_of_sync_count) {
+          content.innerHTML = '<p style="color:#4ade80;font-size:0.85rem">✓ No diff — all resources in sync</p>';
+          return;
+        }
+        content.innerHTML = data.out_of_sync_resources.map(r => `
+          <div style="margin-bottom:0.75rem">
+            <p style="font-size:0.8rem;color:#94a3b8;margin-bottom:0.25rem">${r.kind}/${r.name}</p>
+            <pre>${r.diff ? colorDiff(r.diff) : '<span style="color:#64748b">No diff available</span>'}</pre>
+          </div>`).join('<hr class="section-divider"/>');
+      } catch (err) {
+        document.getElementById(`diff-content-${appName}`).innerHTML = `<span style="color:#f87171">${err.message}</span>`;
+      }
+    }
+
+    function colorDiff(diff) {
+      return diff.split('\n').map(line => {
+        if (line.startsWith('+')) return `<span class="diff-line-add">${escHtml(line)}</span>`;
+        if (line.startsWith('-')) return `<span class="diff-line-del">${escHtml(line)}</span>`;
+        return `<span style="color:#64748b">${escHtml(line)}</span>`;
+      }).join('\n');
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function investigateApp(appName) {
+      showPage('investigate');
+      document.getElementById('argocd_app_input').value = appName;
+      showToast(`Ready to investigate ${appName}`, '');
+    }
+
+    // ── History ─────────────────────────────────────────────────
     async function loadHistory() {
       try {
         const res = await fetch(`${API}/history`);
         const data = await res.json();
+        const list = document.getElementById('history-list-full');
         if (!data.investigations.length) return;
-        const card = document.getElementById('history-card');
-        const list = document.getElementById('history-list');
-        list.innerHTML = data.investigations.slice(0, 5).map(inv => `
+        list.innerHTML = data.investigations.map(inv => `
           <div class="history-item">
-            <strong>${inv.analysis?.root_cause || 'Unknown'}</strong>
-            <span style="float:right; color:#475569; font-size:0.8rem">${new Date(inv.timestamp * 1000).toLocaleTimeString()}</span>
-            <div style="font-size:0.8rem; color:#475569">${inv.namespace} ${inv.pod_name ? '· ' + inv.pod_name : ''}</div>
-          </div>
-        `).join('');
-        card.style.display = 'block';
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong>${inv.analysis?.root_cause || 'Unknown'}</strong>
+              <span style="color:#475569; font-size:0.8rem">${new Date(inv.timestamp * 1000).toLocaleString()}</span>
+            </div>
+            <div style="font-size:0.8rem; color:#475569; margin-top:0.2rem">
+              ${inv.namespace}
+              ${inv.pod_name ? ' · pod: ' + inv.pod_name : ''}
+              ${inv.argocd_app ? ' · <span style="color:#60a5fa">argocd: ' + inv.argocd_app + '</span>' : ''}
+            </div>
+            <div style="font-size:0.85rem; color:#94a3b8; margin-top:0.3rem">${inv.analysis?.summary || ''}</div>
+          </div>`).join('');
       } catch {}
     }
   </script>
